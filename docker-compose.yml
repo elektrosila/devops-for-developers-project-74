@@ -1,0 +1,31 @@
+version: "3"
+services:
+  db:
+    image: postgres
+    environment:
+      POSTGRES_USER: ${DATABASE_USERNAME}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME}
+    volumes:
+      - "pgdata:/var/lib/postgresql/data"
+
+  app:
+    extends:
+      file: docker-compose.override.yml
+      service: app
+    image: elektrosila/devops-for-programmers-project-74
+    build:
+      context: .
+      dockerfile: Dockerfile.production
+    command: npm test
+    environment:
+      DATABASE_NAME: ${DATABASE_NAME}
+      DATABASE_USERNAME: ${DATABASE_USERNAME}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+      DATABASE_PORT: ${DATABASE_PORT}
+      DATABASE_HOST: ${DATABASE_HOST}
+    depends_on:
+      - db
+
+volumes:
+  pgdata:
